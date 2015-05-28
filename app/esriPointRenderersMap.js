@@ -40,7 +40,7 @@
 					'esri/map',
 					'esri/renderers/HeatmapRenderer',
 
-					'lib/dojo/ClusterFeatureLayer'
+					'lib/dojo/clusterfeaturelayer'
 				], function(
 					lang, dom, on,
 					FeatureLayer, Map, HeatmapRenderer,
