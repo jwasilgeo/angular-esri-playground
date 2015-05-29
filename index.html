@@ -18,12 +18,12 @@
 			position: absolute;
 			top: 0;
 			z-index: 10;
-			background-color: rgba(63, 81, 181, 0.7);
-			color: rgba(255, 255, 255, 1);
+			background-color: rgba(63, 81, 181, 0.7) !important;
+			color: rgba(255, 255, 255, 1) !important;
 		}
 		.md-toolbar-tools {
-			width: 90%;
-			padding: 0 30px;
+			/*width: 90%;
+			padding: 0 30px;*/
 		}
 		.map-layer-controls {
 			width: 260px;
@@ -50,11 +50,17 @@
 <body ng-controller="PointRenderersController">
 	<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
 	
-	<div class="title-bar">
-		<h2 class="md-toolbar-tools">
-			<span>Angular Esri Playground: Point Renderers</span>
-		</h2>
-	</div>
+	<md-toolbar class="title-bar">
+		<div class="md-toolbar-tools">
+			<h2>
+				<span>Angular Esri Playground: Point Renderers</span>
+			</h2>
+			<span flex=""></span>
+			<md-button class="md-raised" href="https://github.com/jwasil/angular-esri-playground">
+				GitHub
+			</md-button>
+		</div>
+	</md-toolbar>
 
 	<div class="map-layer-controls">
 		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
