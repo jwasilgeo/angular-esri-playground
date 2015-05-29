@@ -5,21 +5,38 @@
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="//js.arcgis.com/3.13/esri/css/esri.css">
-	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.9.0/angular-material.min.css">
+	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
 	<style type="text/css">
-		html, body, #map {
+		#map {
 			padding: 0;
 			margin: 0;
-			height: 100%
+			height: 100%;
+		}
+		.title-bar {
+			width: 100%;
+			position: absolute;
+			top: 0;
+			z-index: 10;
+			background-color: rgba(63, 81, 181, 0.7);
+			color: rgba(255, 255, 255, 1);
+		}
+		.md-toolbar-tools {
+			width: 90%;
+			padding: 0 30px;
 		}
 		.map-layer-controls {
 			width: 260px;
 			position: absolute;
-			top: 20px;
+			top: 85px;
 			right: 20px;
 			background-color: white;
 			z-index: 10;
+		}
+		.esriSimpleSlider, .esriSimpleSlider div {
+			border-radius: 0;
+			border: 0;
+			top: 85px;
 		}
 		p.md-caption {
 			margin-bottom: -7px;
@@ -30,60 +47,54 @@
 		}
 	</style>
 </head>
-<body>
-	<div ng-controller="PointRenderersController" style="height:100%;">
+<body ng-controller="PointRenderersController">
+	<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
+	
+	<div class="title-bar">
+		<h2 class="md-toolbar-tools">
+			<span>Angular Esri Playground: Point Renderers</span>
+		</h2>
+	</div>
 
-			<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-points-renderer-map>
+	<div class="map-layer-controls">
+		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
+			<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
+				<p class="md-caption">Toggle layer symbology</p>
+				<md-switch ng-model="rendererActive" aria-label="Map Renderer Switch" ng-false-value="'heatmap'" ng-true-value="'cluster'" class="md-primary">
+					<span ng-class="{bold: (rendererActive === 'heatmap')}">Heatmap</span>
+					<span> or </span>
+					<span ng-class="{bold: (rendererActive === 'cluster')}">Cluster</span>
+				</md-switch>
+
+				<div ng-show="(rendererActive === 'heatmap')">
+					<p class="md-caption">Change the blur radius: {{heatmapRendererParams.blurRadius}}</p>
+					<md-slider flex md-discrete ng-model="heatmapRendererParams.blurRadius" step="1" min="0" max="20" aria-label="Blur Radius"></md-slider>		
+					<p class="md-caption">Change the min pixel intensity: {{heatmapRendererParams.minPixelIntensity}}</p>
+					<md-slider flex md-discrete ng-model="heatmapRendererParams.minPixelIntensity" step="5" min="0" max="100" aria-label="Min Pixel Intensity"></md-slider>
+					<p class="md-caption">Change the max pixel intensity: {{heatmapRendererParams.maxPixelIntensity}}</p>
+					<md-slider flex md-discrete ng-model="heatmapRendererParams.maxPixelIntensity" step="5" min="0" max="100" aria-label="Max Pixel Intensity"></md-slider>
+				</div>
+
+				<div ng-show="(rendererActive === 'cluster')">
+					<p class="md-caption">Change the clustering distance:</p>
+					<p class="md-caption">{{clusterTolerance}} pixels</p>
+					<md-slider flex ng-model="clusterTolerance" min="40" max="300" aria-label="Cluster Tolerance"></md-slider>
+				</div>
+			</md-whiteframe>
 			
-			<div class="map-layer-controls">
-
-				<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
-
-					<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
-						<p class="md-caption">Toggle layer symbology</p>
-						<md-switch ng-model="rendererActive" aria-label="Map Renderer Switch" ng-false-value="'heatmap'" ng-true-value="'cluster'" class="md-primary">
-							<span ng-class="{bold: (rendererActive === 'heatmap')}">Heatmap</span>
-							<span> or </span>
-							<span ng-class="{bold: (rendererActive === 'cluster')}">Cluster</span>
-						</md-switch>
-
-						<div ng-show="(rendererActive === 'heatmap')">
-							<p class="md-caption">Change the blur radius: {{heatmapRendererParams.blurRadius}}</p>
-							<md-slider flex md-discrete ng-model="heatmapRendererParams.blurRadius" step="1" min="0" max="25" aria-label="Blur Radius"></md-slider>
-						</div>
-						<div ng-show="(rendererActive === 'heatmap')">
-							<p class="md-caption">Change the min pixel intensity: {{heatmapRendererParams.minPixelIntensity}}</p>
-							<md-slider flex md-discrete ng-model="heatmapRendererParams.minPixelIntensity" step="1" min="0" max="200" aria-label="Min Pixel Intensity"></md-slider>
-						</div>
-						<div ng-show="(rendererActive === 'heatmap')">
-							<p class="md-caption">Change the max pixel intensity: {{heatmapRendererParams.maxPixelIntensity}}</p>
-							<md-slider flex md-discrete ng-model="heatmapRendererParams.maxPixelIntensity" step="1" min="0" max="200" aria-label="Max Pixel Intensity"></md-slider>
-						</div>
-
-						<div ng-show="(rendererActive === 'cluster')">
-							<p class="md-caption">Change the clustering distance:</p>
-							<p class="md-caption">{{clusterTolerance}} pixels</p>
-							<md-slider flex ng-model="clusterTolerance" min="40" max="300" aria-label="Cluster Tolerance"></md-slider>
-						</div>
-					</md-whiteframe>
-					
-					<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
-						<p class="md-caption">Change the basemap</p>
-						<md-select ng-model="basemapActive">
-							<md-select-label>{{basemapActive | uppercase}}</md-select-label>
-							<md-optgroup ng-repeat="(groupKey, groupValue) in basemaps">
-								<label>{{groupKey}}</label>
-								<md-option ng-value="basemap" ng-repeat="basemap in groupValue">
-									{{basemap | uppercase}}
-								</md-option>
-							</md-optgroup>
-						</md-select>
-					</md-whiteframe>
-
-				</md-whiteframe>
-
-			</div>
-
+			<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
+				<p class="md-caption">Change the basemap</p>
+				<md-select ng-model="basemapActive">
+					<md-select-label>{{basemapActive | uppercase}}</md-select-label>
+					<md-optgroup ng-repeat="(groupKey, groupValue) in basemaps">
+						<label>{{groupKey}}</label>
+						<md-option ng-value="basemap" ng-repeat="basemap in groupValue">
+							{{basemap | uppercase}}
+						</md-option>
+					</md-optgroup>
+				</md-select>
+			</md-whiteframe>
+		</md-whiteframe>
 	</div>
 
 	<!-- JavaScript -->
@@ -104,7 +115,7 @@
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.9.0/angular-material.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js"></script>
 
 	<!-- local Angular modules -->
 	<script src="app/app.js"></script>

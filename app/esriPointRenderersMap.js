@@ -32,9 +32,7 @@
 				var esriApp = {};
 
 				require([
-					'dojo/_base/lang',
-					'dojo/dom',
-					'dojo/on',
+					'dojo/dom-class',
 
 					'esri/layers/FeatureLayer',
 					'esri/map',
@@ -42,7 +40,7 @@
 
 					'lib/dojo/clusterfeaturelayer'
 				], function(
-					lang, dom, on,
+					domClass,
 					FeatureLayer, Map, HeatmapRenderer,
 					ClusterFeatureLayer
 				) {
@@ -123,14 +121,11 @@
 
 					// after map is loaded, add layers and set up angular $scope watches
 					esriApp.map.on('load', function(e) {
-						$log.log('got here');
 						createMapLayers();
 						mapDeferred.resolve(esriApp);
 					});
 
 					mapDeferred.promise.then(function(esriApp) {
-						$log.log('mapDeferred promise');
-
 						$scope.$watch('mapLoaded', function(newValue) {
 							$log.log('mapLoaded: ', newValue);
 						});
@@ -140,7 +135,6 @@
 						});
 
 						$scope.$watch('rendererActive', function(newValue) {
-							$log.log('rendererActive: ', newValue);
 							toggleMapLayers(newValue);
 						});
 
@@ -160,6 +154,9 @@
 
 						// loaded should be true by now
 						$scope.mapLoaded = esriApp.map.loaded;
+
+						// manually add material design whiteframe class to map zoom buttons
+						domClass.add('map_zoom_slider', 'md-whiteframe-z2');
 
 						// clean up
 						$scope.$on('$destroy', function() {
