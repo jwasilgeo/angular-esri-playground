@@ -1,0 +1,42 @@
+<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
+
+<div class="map-layer-controls">
+	<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
+		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
+			<p class="md-caption">Toggle layer symbology</p>
+			<md-switch ng-model="rendererActive" aria-label="Map Renderer Switch" ng-false-value="'heatmap'" ng-true-value="'cluster'" class="md-primary">
+				<span ng-class="{bold: (rendererActive === 'heatmap')}">Heatmap</span>
+				<span> or </span>
+				<span ng-class="{bold: (rendererActive === 'cluster')}">Cluster</span>
+			</md-switch>
+
+			<div ng-show="(rendererActive === 'heatmap')">
+				<p class="md-caption">Change the blur radius: {{heatmapRendererParams.blurRadius}}</p>
+				<md-slider flex md-discrete ng-model="heatmapRendererParams.blurRadius" step="1" min="0" max="20" aria-label="Blur Radius"></md-slider>		
+				<p class="md-caption">Change the min pixel intensity: {{heatmapRendererParams.minPixelIntensity}}</p>
+				<md-slider flex md-discrete ng-model="heatmapRendererParams.minPixelIntensity" step="5" min="0" max="100" aria-label="Min Pixel Intensity"></md-slider>
+				<p class="md-caption">Change the max pixel intensity: {{heatmapRendererParams.maxPixelIntensity}}</p>
+				<md-slider flex md-discrete ng-model="heatmapRendererParams.maxPixelIntensity" step="5" min="0" max="100" aria-label="Max Pixel Intensity"></md-slider>
+			</div>
+
+			<div ng-show="(rendererActive === 'cluster')">
+				<p class="md-caption">Change the clustering distance:</p>
+				<p class="md-caption">{{clusterTolerance}} pixels</p>
+				<md-slider flex ng-model="clusterTolerance" min="40" max="300" aria-label="Cluster Tolerance"></md-slider>
+			</div>
+		</md-whiteframe>
+		
+		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
+			<p class="md-caption">Change the basemap</p>
+			<md-select ng-model="basemapActive">
+				<md-select-label>{{basemapActive | uppercase}}</md-select-label>
+				<md-optgroup ng-repeat="(groupKey, groupValue) in basemaps">
+					<label>{{groupKey}}</label>
+					<md-option ng-value="basemap" ng-repeat="basemap in groupValue">
+						{{basemap | uppercase}}
+					</md-option>
+				</md-optgroup>
+			</md-select>
+		</md-whiteframe>
+	</md-whiteframe>
+</div>

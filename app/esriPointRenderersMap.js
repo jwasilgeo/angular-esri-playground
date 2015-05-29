@@ -1,6 +1,31 @@
 (function() {
 	'use strict';
-	angular.module('PointRenderersMapApp').directive('esriPointRenderersMap', ['$q', '$log', function($q, $log) {
+	angular.module('AngularEsriPlaygroundApp').controller('PointRenderersController', ['$scope', function($scope) {
+		$scope.subtitle = 'Point Renderers';
+		$scope.$emit('subtitle-change', $scope.subtitle);
+
+		$scope.mapLoaded = false;
+
+		$scope.rendererActive = 'heatmap';
+		$scope.renderers = ['heatmap', 'cluster'];
+
+		$scope.heatmapRendererParams = {
+			blurRadius: 12,
+			minPixelIntensity: 0,
+			maxPixelIntensity: 100
+		};
+		$scope.clusterTolerance = 70;
+
+		$scope.basemapActive = 'dark-gray';
+		$scope.basemaps = {
+			'reference': ['topo', 'terrain', 'streets', 'oceans', 'national-geographic'],
+			'imagery': ['satellite', 'hybrid'],
+			'hipster': ['gray', 'dark-gray'],
+			'third party': ['osm']
+		};
+	}]);
+
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', function($q, $log) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -157,6 +182,8 @@
 
 						// manually add material design whiteframe class to map zoom buttons
 						domClass.add('map_zoom_slider', 'md-whiteframe-z2');
+						// resize just to be safe
+						esriApp.map.resize();
 
 						// clean up
 						$scope.$on('$destroy', function() {
