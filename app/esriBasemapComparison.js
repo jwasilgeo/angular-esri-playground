@@ -1,22 +1,33 @@
 (function() {
 	'use strict';
-	angular.module('AngularEsriPlaygroundApp').controller('BasemapComparisonController', ['$scope', function($scope) {
+	angular.module('AngularEsriPlaygroundApp').controller('BasemapComparisonController', ['$route', '$scope', '$window', function($route, $scope, $window) {
 		$scope.subtitle = 'Basemap Comparison';
 		$scope.$emit('subtitle-change', $scope.subtitle);
 
-		$scope.mapLoaded = false;
+		$scope.basemaps = ['topo', 'satellite', 'hybrid', 'osm', 'terrain', 'streets', 'oceans', 'national-geographic', 'gray', 'dark-gray'];
 
-		$scope.basemapActive = 'dark-gray';
-		// $scope.basemaps = {
-		// 	'reference': ['topo', 'terrain', 'streets', 'oceans', 'national-geographic'],
-		// 	'imagery': ['satellite', 'hybrid'],
-		// 	'hipster': ['gray', 'dark-gray'],
-		// 	'third party': ['osm']
-		// };
-		$scope.basemaps = ['topo', 'terrain', 'streets', 'oceans', 'national-geographic'];
+		$scope.map = {
+			center: {
+				// Crater Lake, OR
+				// lng: -122.110,
+				// lat: 42.940
+
+				// Tristan da Cunha
+				lng: -12.283,
+				lat: -37.116
+			},
+			zoom: 11
+		};
+
+		// $scope.$on('$routeChangeStart', function(e) {
+		// 	console.log(e);
+		// 	e.preventDefault();
+		// 	// $window.location.reload();
+		// 	$route.reload();
+		// });
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$log', function($q, $log) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$log', '$timeout', '$window', function($q, $log, $timeout, $window) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -24,8 +35,9 @@
 			// isolate the scope
 			scope: {
 				// 2-way object binding
-				mapLoaded: '=',
-				basemap: '='
+				basemap: '@',
+				center: '=',
+				zoom: '='
 			},
 
 			compile: function($element, $attrs) {
@@ -41,57 +53,86 @@
 
 			controller: function($scope, $element, $attrs) {
 				var mapDeferred = $q.defer();
-				var esriApp = {};
+				// var esriApp = {};
 
 				require([
 					'esri/map'
 				], function(
 					Map
 				) {
-					// map-related functions and business logic
-					var changeBasemap = function(basemap) {
-						if (esriApp.map.getBasemap() !== basemap) {
-							esriApp.map.setBasemap(basemap);
-						}
-					};
-
 					// construct the map
-					esriApp.map = new Map($attrs.id, {
+					var map = new Map($attrs.id, {
 						basemap: $scope.basemap,
-						center: [16, 3.5], // longitude, latitude
-						zoom: 4
+						center: [$scope.center.lng, $scope.center.lat],
+						zoom: $scope.zoom,
+						slider: false
 					});
 
 					// after map is loaded, add layers and set up angular $scope watches
-					esriApp.map.on('load', function(e) {
-						mapDeferred.resolve(esriApp);
+					map.on('load', function(e) {
+						mapDeferred.resolve(map);
 					});
 
-					mapDeferred.promise.then(function(esriApp) {
-						$scope.$watch('mapLoaded', function(newValue) {
-							$log.log('mapLoaded: ', newValue);
-						});
-
-						/*$scope.$watch('basemapActive', function(newValue) {
-							changeBasemap(newValue);
-						});*/
-
-						// loaded should be true by now
-						$scope.mapLoaded = esriApp.map.loaded;
-
+					mapDeferred.promise.then(function(map) {
 						// manually add material design whiteframe class to map zoom buttons
 						// domClass.add('map_zoom_slider', 'md-whiteframe-z2');
 						// resize just to be safe
-						// esriApp.map.resize();
-						// esriApp.map.reposition();
 
-						esriApp.map.on('extent-change', function(evt) {
-							$log.log('tell the world');
+						$scope.inUpdateCycle = false;
+
+						$scope.$watchGroup([
+							'center.lng', 'center.lat', 'zoom'
+						], function(newCenterZoom, oldCenterZoom) {
+							if ($scope.inUpdateCycle) {
+								return;
+							}
+
+							// $log.log('center/zoom changed', newCenterZoom, oldCenterZoom);
+							// newCenterZoom = newCenterZoom.split(',');
+							if (newCenterZoom[0] !== '' && newCenterZoom[1] !== '' && newCenterZoom[2] !== '') {
+								$scope.inUpdateCycle = true; // prevent circular updates between $watch and $apply
+								map.centerAndZoom([newCenterZoom[0], newCenterZoom[1]], newCenterZoom[2]).then(function() {
+									// $log.log('after centerAndZoom()');
+									$scope.inUpdateCycle = false;
+								});
+							}
 						});
+
+						map.on('extent-change', function(e) {
+							if ($scope.inUpdateCycle) {
+								return;
+							}
+
+							$scope.inUpdateCycle = true; // prevent circular updates between $watch and $apply
+
+							// $log.log('extent-change geo', map.geographicExtent);
+
+							$scope.$apply(function() {
+								var geoCenter = map.geographicExtent.getCenter();
+
+								$scope.center.lng = geoCenter.x;
+								$scope.center.lat = geoCenter.y;
+								$scope.zoom = map.getZoom();
+
+								// we might want to execute event handler even if $scope.inUpdateCycle is true
+								if ($attrs.extentChange) {
+									$scope.extentChange()(e);
+								}
+
+								$timeout(function() {
+									// this will be executed after the $digest cycle
+									// $log.log('after apply()');
+									$scope.inUpdateCycle = false;
+								}, 0);
+							});
+						});
+
+						// map.resize();
+						map.reposition();
 
 						// clean up
 						$scope.$on('$destroy', function() {
-							esriApp.map.destroy();
+							map.destroy();
 						});
 					});
 				});
