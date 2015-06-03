@@ -4,8 +4,6 @@
 		$scope.subtitle = appConfig.pointRenderers.subtitle;
 		$scope.$emit('subtitle-change', $scope.subtitle);
 
-		$scope.mapLoaded = false;
-
 		$scope.rendererActive = appConfig.pointRenderers.rendererActive;
 		$scope.renderers = appConfig.pointRenderers.renderers;
 
@@ -14,6 +12,10 @@
 
 		$scope.basemapActive = appConfig.basemapActive;
 		$scope.basemaps = appConfig.basemapsGrouped;
+		
+		$scope.mapLoaded = false;
+
+		$scope.geocodedData = {};
 	}]);
 
 	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', function($q, $log, appConfig) {
@@ -29,7 +31,8 @@
 				mapLoaded: '=',
 				basemapActive: '=',
 				clusterTolerance: '=',
-				heatmapRendererParams: '='
+				heatmapRendererParams: '=',
+				geocodedData: '='
 			},
 
 			compile: function($element, $attrs) {
@@ -62,7 +65,7 @@
 				) {
 					// map-related functions and business logic
 					var createMapLayers = function() {
-						var layerUrl = appConfig.pointRenderers.layerUrl;
+						var layerUrl = appConfig.pointRenderers.layer.url;
 						var layersToAdd = [];
 
 						esriApp.clusterLayer = new ClusterFeatureLayer({
@@ -75,7 +78,7 @@
 							useDefaultSymbol: false,
 							zoomOnClick: true,
 							showSingles: true,
-							objectIdField: 'FID',
+							objectIdField: appConfig.pointRenderers.layer.objectIdField,
 						});
 						layersToAdd.push(esriApp.clusterLayer);
 
@@ -167,12 +170,18 @@
 							changeClusterTolerance(newValue);
 						});
 
+						$scope.$watch('geocodedData', function(newValue) {
+							$log.log('geocoded data: ', newValue);
+							// doSomethingInTheMap(newValue);
+						});
+
 						// loaded should be true by now
 						$scope.mapLoaded = esriApp.map.loaded;
 
 						// manually add material design whiteframe class to map zoom buttons
 						domClass.add('map_zoom_slider', 'md-whiteframe-z2');
-						// resize just to be safe
+						
+						// resize just to be safe with ngRouter
 						esriApp.map.resize();
 
 						// clean up
