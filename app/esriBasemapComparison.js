@@ -1,10 +1,10 @@
 (function() {
 	'use strict';
-	angular.module('AngularEsriPlaygroundApp').controller('BasemapComparisonController', ['$route', '$scope', '$window', function($route, $scope, $window) {
-		$scope.subtitle = 'Basemap Comparison';
+	angular.module('AngularEsriPlaygroundApp').controller('BasemapComparisonController', ['$route', '$scope', '$window', 'appConfig', function($route, $scope, $window, appConfig) {
+		$scope.subtitle = appConfig.basemapComparison.subtitle;
 		$scope.$emit('subtitle-change', $scope.subtitle);
 
-		$scope.basemaps = ['topo', 'satellite', 'hybrid', 'osm', 'terrain', 'streets', 'oceans', 'national-geographic', 'gray', 'dark-gray'];
+		$scope.basemaps = appConfig.basemapsFlattened;
 
 		$scope.map = {
 			center: {

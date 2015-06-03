@@ -1,31 +1,22 @@
 (function() {
 	'use strict';
-	angular.module('AngularEsriPlaygroundApp').controller('PointRenderersController', ['$scope', function($scope) {
-		$scope.subtitle = 'Point Renderers';
+	angular.module('AngularEsriPlaygroundApp').controller('PointRenderersController', ['$scope', 'appConfig', function($scope, appConfig) {
+		$scope.subtitle = appConfig.pointRenderers.subtitle;
 		$scope.$emit('subtitle-change', $scope.subtitle);
 
 		$scope.mapLoaded = false;
 
-		$scope.rendererActive = 'heatmap';
-		$scope.renderers = ['heatmap', 'cluster'];
+		$scope.rendererActive = appConfig.pointRenderers.rendererActive;
+		$scope.renderers = appConfig.pointRenderers.renderers;
 
-		$scope.heatmapRendererParams = {
-			blurRadius: 12,
-			minPixelIntensity: 0,
-			maxPixelIntensity: 100
-		};
-		$scope.clusterTolerance = 70;
+		$scope.heatmapRendererParams = appConfig.pointRenderers.heatmapRendererParams;
+		$scope.clusterTolerance = appConfig.pointRenderers.clusterTolerance;
 
-		$scope.basemapActive = 'dark-gray';
-		$scope.basemaps = {
-			'reference': ['topo', 'terrain', 'streets', 'oceans', 'national-geographic'],
-			'imagery': ['satellite', 'hybrid'],
-			'hipster': ['gray', 'dark-gray'],
-			'third party': ['osm']
-		};
+		$scope.basemapActive = appConfig.basemapActive;
+		$scope.basemaps = appConfig.basemapsGrouped;
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', function($q, $log) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', function($q, $log, appConfig) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -71,8 +62,7 @@
 				) {
 					// map-related functions and business logic
 					var createMapLayers = function() {
-						// var layerUrl = 'http://services.arcgis.com/BG6nSlhZSAWtExvp/arcgis/rest/services/World_Volcanoes/FeatureServer/0';
-						var layerUrl = 'http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/0';
+						var layerUrl = appConfig.pointRenderers.layerUrl;
 						var layersToAdd = [];
 
 						esriApp.clusterLayer = new ClusterFeatureLayer({
@@ -140,8 +130,8 @@
 					// construct the map
 					esriApp.map = new Map($attrs.id, {
 						basemap: $scope.basemapActive,
-						center: [16, 3.5], // longitude, latitude
-						zoom: 4
+						center: appConfig.pointRenderers.mapOptions.center,
+						zoom: appConfig.pointRenderers.mapOptions.zoom
 					});
 
 					// after map is loaded, add layers and set up angular $scope watches

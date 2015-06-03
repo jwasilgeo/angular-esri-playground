@@ -15,6 +15,7 @@
 			.otherwise({
 				redirectTo: '/point-renderers'
 			});
+
 	});
 
 	angular.module('AngularEsriPlaygroundApp').controller('AngularEsriPlaygroundController', ['$scope', function($scope) {
@@ -23,4 +24,5 @@
 			$scope.subtitle = newSubtitle;
 		});
 	}]);
+
 })(angular);
