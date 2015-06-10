@@ -31,7 +31,7 @@
 					url: 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest',
 					params: {
 						text: query,
-						category: 'Address,Postal',
+						category: 'Address,Postal,Populated Place',
 						f: 'json'
 					}
 				};
