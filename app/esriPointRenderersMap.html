@@ -1,6 +1,6 @@
-<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}" geocoded-data="geocodedData"></esri-point-renderers-map>
+<esri-point-renderers-map id="map" register-as="registeredPointRenderersMapDirective" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
 
-<div class="map-layer-controls">
+<div class="map-layer-controls" ng-cloak>
 	<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
 		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
 			<p class="md-caption">Toggle layer symbology</p>
@@ -39,7 +39,7 @@
 			</md-select>
 
 			<div ng-controller="EsriGeocodeMdAutocompleteController">
-				<md-autocomplete flex="" md-items="item in queryGeocodeSuggest(searchText)" md-item-text="item.shortDisplay" md-search-text="searchText" md-selected-item="selectedItem" md-selected-item-change="queryGeocodeFind(selectedItem)" md-min-length="3" md-delay="750" md-no-cache="true" md-floating-label="Find a location">
+				<md-autocomplete flex="" md-items="item in queryGeocodeSuggest(searchText)" md-item-text="item.shortDisplay" md-search-text="searchText" md-selected-item="selectedItem" md-selected-item-change="queryGeocodeFind(selectedItem)" md-min-length="3" md-delay="750" md-no-cache="true" md-floating-label="Find an address">
 					<md-item-template>
 						<span md-highlight-text="searchText">{{item.display}}</span>
 					</md-item-template>

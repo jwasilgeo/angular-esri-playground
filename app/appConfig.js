@@ -23,7 +23,6 @@
 				center: [16, 3.5],
 				zoom: 4
 			},
-			// layerUrl: 'http://services.arcgis.com/BG6nSlhZSAWtExvp/arcgis/rest/services/World_Volcanoes/FeatureServer/0',
 			layer: {
 				// url: 'http://services.arcgis.com/BG6nSlhZSAWtExvp/arcgis/rest/services/World_Volcanoes/FeatureServer/0',
 				url: 'http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/0',

@@ -12,13 +12,11 @@
 
 		$scope.basemapActive = appConfig.basemapActive;
 		$scope.basemaps = appConfig.basemapsGrouped;
-		
-		$scope.mapLoaded = false;
 
-		$scope.geocodedData = {};
+		$scope.mapLoaded = false;
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', function($q, $log, appConfig) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', 'esriRegistry', function($q, $log, appConfig, esriRegistry) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -31,8 +29,7 @@
 				mapLoaded: '=',
 				basemapActive: '=',
 				clusterTolerance: '=',
-				heatmapRendererParams: '=',
-				geocodedData: '='
+				heatmapRendererParams: '='
 			},
 
 			compile: function($element, $attrs) {
@@ -49,6 +46,13 @@
 			controller: function($scope, $element, $attrs) {
 				var mapDeferred = $q.defer();
 				var esriApp = {};
+
+				// add this map to the registry
+				if ($attrs.registerAs) {
+					var deregister = esriRegistry._register($attrs.registerAs, mapDeferred);
+					// remove this from the registry when the scope is destroyed
+					$scope.$on('$destroy', deregister);
+				}
 
 				require([
 					'dojo/dom-class',
@@ -137,8 +141,10 @@
 						zoom: appConfig.pointRenderers.mapOptions.zoom
 					});
 
+
 					// after map is loaded, add layers and set up angular $scope watches
 					esriApp.map.on('load', function(e) {
+						esriApp.map.disableKeyboardNavigation();
 						createMapLayers();
 						mapDeferred.resolve(esriApp);
 					});
@@ -170,17 +176,12 @@
 							changeClusterTolerance(newValue);
 						});
 
-						$scope.$watch('geocodedData', function(newValue) {
-							$log.log('geocoded data: ', newValue);
-							// doSomethingInTheMap(newValue);
-						});
-
 						// loaded should be true by now
 						$scope.mapLoaded = esriApp.map.loaded;
 
 						// manually add material design whiteframe class to map zoom buttons
 						domClass.add('map_zoom_slider', 'md-whiteframe-z2');
-						
+
 						// resize just to be safe with ngRouter
 						esriApp.map.resize();
 
