@@ -1,6 +1,22 @@
 (function() {
 	'use strict';
-	angular.module('PointRenderersMapApp').directive('esriPointRenderersMap', ['$q', '$log', function($q, $log) {
+	angular.module('AngularEsriPlaygroundApp').controller('PointRenderersController', ['$scope', 'appConfig', function($scope, appConfig) {
+		$scope.subtitle = appConfig.pointRenderers.subtitle;
+		$scope.$emit('subtitle-change', $scope.subtitle);
+
+		$scope.rendererActive = appConfig.pointRenderers.rendererActive;
+		$scope.renderers = appConfig.pointRenderers.renderers;
+
+		$scope.heatmapRendererParams = appConfig.pointRenderers.heatmapRendererParams;
+		$scope.clusterTolerance = appConfig.pointRenderers.clusterTolerance;
+
+		$scope.basemapActive = appConfig.basemapActive;
+		$scope.basemaps = appConfig.basemapsGrouped;
+
+		$scope.mapLoaded = false;
+	}]);
+
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', 'esriRegistry', function($q, $log, appConfig, esriRegistry) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -31,6 +47,13 @@
 				var mapDeferred = $q.defer();
 				var esriApp = {};
 
+				// add this map to the registry
+				if ($attrs.registerAs) {
+					var deregister = esriRegistry._register($attrs.registerAs, mapDeferred);
+					// remove this from the registry when the scope is destroyed
+					$scope.$on('$destroy', deregister);
+				}
+
 				require([
 					'dojo/dom-class',
 
@@ -46,8 +69,7 @@
 				) {
 					// map-related functions and business logic
 					var createMapLayers = function() {
-						// var layerUrl = 'http://services.arcgis.com/BG6nSlhZSAWtExvp/arcgis/rest/services/World_Volcanoes/FeatureServer/0';
-						var layerUrl = 'http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/0';
+						var layerUrl = appConfig.pointRenderers.layer.url;
 						var layersToAdd = [];
 
 						esriApp.clusterLayer = new ClusterFeatureLayer({
@@ -60,7 +82,7 @@
 							useDefaultSymbol: false,
 							zoomOnClick: true,
 							showSingles: true,
-							objectIdField: 'FID',
+							objectIdField: appConfig.pointRenderers.layer.objectIdField,
 						});
 						layersToAdd.push(esriApp.clusterLayer);
 
@@ -115,12 +137,14 @@
 					// construct the map
 					esriApp.map = new Map($attrs.id, {
 						basemap: $scope.basemapActive,
-						center: [16, 3.5], // longitude, latitude
-						zoom: 4
+						center: appConfig.pointRenderers.mapOptions.center,
+						zoom: appConfig.pointRenderers.mapOptions.zoom
 					});
+
 
 					// after map is loaded, add layers and set up angular $scope watches
 					esriApp.map.on('load', function(e) {
+						esriApp.map.disableKeyboardNavigation();
 						createMapLayers();
 						mapDeferred.resolve(esriApp);
 					});
@@ -157,6 +181,9 @@
 
 						// manually add material design whiteframe class to map zoom buttons
 						domClass.add('map_zoom_slider', 'md-whiteframe-z2');
+
+						// resize just to be safe with ngRouter
+						esriApp.map.resize();
 
 						// clean up
 						$scope.$on('$destroy', function() {

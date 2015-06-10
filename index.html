@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="PointRenderersMapApp">
+<html ng-app="AngularEsriPlaygroundApp">
 <head>
 	<title>Angular Esri Playground</title>
 	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
@@ -8,10 +8,14 @@
 	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.css">
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
 	<style type="text/css">
-		#map {
+		.router-content, #map, .map {
 			padding: 0;
 			margin: 0;
 			height: 100%;
+		}
+		.basemap-comparison-map, .basemap-comparison-map .map {
+			/*width: 300px !important;*/
+			/*height: 100% !important;*/
 		}
 		.title-bar {
 			width: 100%;
@@ -20,10 +24,6 @@
 			z-index: 10;
 			background-color: rgba(63, 81, 181, 0.7) !important;
 			color: rgba(255, 255, 255, 1) !important;
-		}
-		.md-toolbar-tools {
-			/*width: 90%;
-			padding: 0 30px;*/
 		}
 		.map-layer-controls {
 			width: 260px;
@@ -45,63 +45,29 @@
 		.bold {
 			font-weight: bold;
 		}
+		md-grid-tile-footer.ng-scope {
+			background: rgba(0, 0, 0, 0.4);
+		}
 	</style>
 </head>
-<body ng-controller="PointRenderersController">
-	<esri-point-renderers-map id="map" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
-	
+<body ng-controller="AngularEsriPlaygroundController">
 	<md-toolbar class="title-bar">
 		<div class="md-toolbar-tools">
 			<h2>
-				<span>Angular Esri Playground: Point Renderers</span>
+				<span>Angular Esri Playground: {{subtitle}}</span>
 			</h2>
 			<span flex=""></span>
+			<!-- <md-button class="md-raised md-accent" href="#/basemap-comparison">
+				Other Demo
+			</md-button> -->
 			<md-button class="md-raised" href="https://github.com/jwasil/angular-esri-playground">
 				GitHub
 			</md-button>
 		</div>
 	</md-toolbar>
 
-	<div class="map-layer-controls">
-		<md-whiteframe class="md-whiteframe-z2" layout="column" layout-padding>
-			<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
-				<p class="md-caption">Toggle layer symbology</p>
-				<md-switch ng-model="rendererActive" aria-label="Map Renderer Switch" ng-false-value="'heatmap'" ng-true-value="'cluster'" class="md-primary">
-					<span ng-class="{bold: (rendererActive === 'heatmap')}">Heatmap</span>
-					<span> or </span>
-					<span ng-class="{bold: (rendererActive === 'cluster')}">Cluster</span>
-				</md-switch>
-
-				<div ng-show="(rendererActive === 'heatmap')">
-					<p class="md-caption">Change the blur radius: {{heatmapRendererParams.blurRadius}}</p>
-					<md-slider flex md-discrete ng-model="heatmapRendererParams.blurRadius" step="1" min="0" max="20" aria-label="Blur Radius"></md-slider>		
-					<p class="md-caption">Change the min pixel intensity: {{heatmapRendererParams.minPixelIntensity}}</p>
-					<md-slider flex md-discrete ng-model="heatmapRendererParams.minPixelIntensity" step="5" min="0" max="100" aria-label="Min Pixel Intensity"></md-slider>
-					<p class="md-caption">Change the max pixel intensity: {{heatmapRendererParams.maxPixelIntensity}}</p>
-					<md-slider flex md-discrete ng-model="heatmapRendererParams.maxPixelIntensity" step="5" min="0" max="100" aria-label="Max Pixel Intensity"></md-slider>
-				</div>
-
-				<div ng-show="(rendererActive === 'cluster')">
-					<p class="md-caption">Change the clustering distance:</p>
-					<p class="md-caption">{{clusterTolerance}} pixels</p>
-					<md-slider flex ng-model="clusterTolerance" min="40" max="300" aria-label="Cluster Tolerance"></md-slider>
-				</div>
-			</md-whiteframe>
-			
-			<md-whiteframe class="md-whiteframe-z2" layout="column" layout-margin layout-padding>
-				<p class="md-caption">Change the basemap</p>
-				<md-select ng-model="basemapActive">
-					<md-select-label>{{basemapActive | uppercase}}</md-select-label>
-					<md-optgroup ng-repeat="(groupKey, groupValue) in basemaps">
-						<label>{{groupKey}}</label>
-						<md-option ng-value="basemap" ng-repeat="basemap in groupValue">
-							{{basemap | uppercase}}
-						</md-option>
-					</md-optgroup>
-				</md-select>
-			</md-whiteframe>
-		</md-whiteframe>
-	</div>
+	<!-- router page content -->
+	<div class="router-content" ng-view=""></div>
 
 	<!-- JavaScript -->
 	<!-- Dojo & Esri JSAPI -->
@@ -119,12 +85,20 @@
 	
 	<!-- Angular & Angular Material Dependencies -->
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-route.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
 	<script src="//ajax.googleapis.com/ajax/libs/angular_material/0.9.4/angular-material.min.js"></script>
 
-	<!-- local Angular modules -->
+	<!-- angular-esri-map library -->
+	<!-- <script src="lib/angular/angular-esri-map.min.js"></script> -->
+	<script src="lib/angular/angular-esri-map.js"></script>
+
+	<!-- this app's Angular modules -->
 	<script src="app/app.js"></script>
+	<script src="app/appConfig.js"></script>
 	<script src="app/esriPointRenderersMap.js"></script>
+	<script src="app/esriBasemapComparison.js"></script>
+	<script src="app/esriGeocode-mdAutocomplete.js"></script>
 </body>
 </html>

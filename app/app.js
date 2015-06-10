@@ -1,27 +1,28 @@
 (function() {
 	'use strict';
-	angular.module('PointRenderersMapApp', ['ngMaterial']);
+	angular.module('AngularEsriPlaygroundApp', ['ngRoute', 'ngMaterial', 'esri.map']);
 
-	angular.module('PointRenderersMapApp').controller('PointRenderersController', ['$scope', function($scope) {
-		$scope.mapLoaded = false;
+	angular.module('AngularEsriPlaygroundApp').config(function($routeProvider) {
+		$routeProvider
+			.when('/point-renderers', {
+				templateUrl: 'app/esriPointRenderersMap.html',
+				controller: 'PointRenderersController'
+			})
+			.when('/basemap-comparison', {
+				templateUrl: 'app/esriBasemapComparison.html',
+				controller: 'BasemapComparisonController'
+			})
+			.otherwise({
+				redirectTo: '/point-renderers'
+			});
 
-		$scope.rendererActive = 'heatmap';
-		$scope.renderers = ['heatmap', 'cluster'];
+	});
 
-		$scope.heatmapRendererParams = {
-			blurRadius: 12,
-			minPixelIntensity: 0,
-			maxPixelIntensity: 100
-		};
-		$scope.clusterTolerance = 70;
-
-		$scope.basemapActive = 'dark-gray';
-		$scope.basemaps = {
-			'reference': ['topo', 'terrain', 'streets', 'oceans', 'national-geographic'],
-			'imagery': ['satellite', 'hybrid'],
-			'hipster': ['gray', 'dark-gray'],
-			'third party': ['osm']
-		};
-
+	angular.module('AngularEsriPlaygroundApp').controller('AngularEsriPlaygroundController', ['$scope', function($scope) {
+		$scope.subtitle = '...';
+		$scope.$on('subtitle-change', function(evt, newSubtitle) {
+			$scope.subtitle = newSubtitle;
+		});
 	}]);
+
 })(angular);
