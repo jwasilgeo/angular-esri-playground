@@ -1,6 +1,6 @@
 (function() {
 	'use strict';
-	angular.module('AngularEsriPlaygroundApp', ['ngRoute', 'ngMaterial', 'esri.map']);
+	angular.module('AngularEsriPlaygroundApp', ['ngRoute', 'ngMaterial', 'esri.core']);
 
 	angular.module('AngularEsriPlaygroundApp').config(function($routeProvider) {
 		$routeProvider

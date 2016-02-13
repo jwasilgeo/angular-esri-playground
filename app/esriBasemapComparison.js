@@ -13,7 +13,7 @@
 				// lat: 42.940
 
 				// Tristan da Cunha
-				lng: -12.283,
+				lng: -12.225,
 				lat: -37.116
 			},
 			zoom: 11
@@ -27,7 +27,7 @@
 		// });
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$log', '$timeout', '$window', function($q, $log, $timeout, $window) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$timeout', '$window', function($q, $timeout, $window) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -70,6 +70,7 @@
 
 					// after map is loaded, add layers and set up angular $scope watches
 					map.on('load', function(e) {
+						map.disableDoubleClickZoom();
 						mapDeferred.resolve(map);
 					});
 

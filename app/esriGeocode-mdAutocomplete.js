@@ -1,8 +1,8 @@
 (function() {
 	'use strict';
 	angular.module('AngularEsriPlaygroundApp').controller('EsriGeocodeMdAutocompleteController', [
-		'$q', '$http', '$scope', '$filter', 'esriRegistry', 'esriLoader',
-		function($q, $http, $scope, $filter, esriRegistry, esriLoader) {
+		'$q', '$http', '$scope', 'esriRegistry', 'esriLoader',
+		function($q, $http, $scope, esriRegistry, esriLoader) {
 			$scope.selectedItem = null;
 			$scope.searchText = null;
 			$scope.notFoundMessage = 'No matches found.';
@@ -14,15 +14,15 @@
 			var mapDirectiveReference,
 				EsriExtent,
 				EsriSpatialReference;
+
 			esriRegistry.get('registeredPointRenderersMapDirective').then(function(directiveReference) {
 				mapDirectiveReference = directiveReference;
-				esriLoader([
+				esriLoader.require([
 					'esri/geometry/Extent', 'esri/SpatialReference'
-				]).then(
-					function(modules) {
-						EsriExtent = modules[0];
-						EsriSpatialReference = modules[1];
-					});
+				], function(Extent, SpatialReference) {
+					EsriExtent = Extent;
+					EsriSpatialReference = SpatialReference;
+				});
 			});
 
 			function queryGeocodeSuggest(query) {
@@ -41,7 +41,6 @@
 						return {
 							value: suggestion,
 							display: suggestion.text,
-							shortDisplay: suggestion.text.length <= 18 ? suggestion.text : ($filter('limitTo')(suggestion.text, 18)) + '...',
 						};
 					});
 					deferred.resolve(scrubbedSuggestions);

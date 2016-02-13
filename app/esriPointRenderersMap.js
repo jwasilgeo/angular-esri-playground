@@ -16,7 +16,7 @@
 		$scope.mapLoaded = false;
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', '$log', 'appConfig', 'esriRegistry', function($q, $log, appConfig, esriRegistry) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', 'appConfig', 'esriRegistry', function($q, appConfig, esriRegistry) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -49,7 +49,7 @@
 
 				// add this map to the registry
 				if ($attrs.registerAs) {
-					var deregister = esriRegistry._register($attrs.registerAs, mapDeferred);
+					var deregister = esriRegistry._register($attrs.registerAs, mapDeferred.promise);
 					// remove this from the registry when the scope is destroyed
 					$scope.$on('$destroy', deregister);
 				}
@@ -83,6 +83,7 @@
 							zoomOnClick: true,
 							showSingles: true,
 							objectIdField: appConfig.pointRenderers.layer.objectIdField,
+							mode: FeatureLayer.MODE_SNAPSHOT
 						});
 						layersToAdd.push(esriApp.clusterLayer);
 
@@ -93,7 +94,8 @@
 							maxPixelIntensity: $scope.heatmapRendererParams.maxPixelIntensity
 						});
 						esriApp.heatmapLayer = new FeatureLayer(layerUrl, {
-							id: 'heatmapLayer'
+							id: 'heatmapLayer',
+							mode: FeatureLayer.MODE_SNAPSHOT
 						});
 						esriApp.heatmapLayer.setRenderer(heatmapRenderer);
 						layersToAdd.push(esriApp.heatmapLayer);
@@ -151,7 +153,7 @@
 
 					mapDeferred.promise.then(function(esriApp) {
 						$scope.$watch('mapLoaded', function(newValue) {
-							$log.log('mapLoaded: ', newValue);
+							console.log('mapLoaded: ', newValue);
 						});
 
 						$scope.$watch('basemapActive', function(newValue) {
