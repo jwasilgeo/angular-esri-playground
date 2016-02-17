@@ -1,7 +1,7 @@
 # angular-esri-playground
 A demo and playground for working with both AngularJS and the Esri ArcGIS API for JavaScript.
 
-[http://jwasil.github.io/angular-esri-playground/](http://jwasil.github.io/angular-esri-playground/)
+[http://jwasilgeo.github.io/angular-esri-playground/](http://jwasilgeo.github.io/angular-esri-playground/)
 
 #### Features
 - [Esri ArcGIS API for JavaScript](https://developers.arcgis.com/javascript/)
