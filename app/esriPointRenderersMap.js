@@ -12,11 +12,9 @@
 
 		$scope.basemapActive = appConfig.basemapActive;
 		$scope.basemaps = appConfig.basemapsGrouped;
-
-		$scope.mapLoaded = false;
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', 'appConfig', 'esriRegistry', function($q, appConfig, esriRegistry) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriPointRenderersMap', ['$q', 'appConfig', 'esriLoader', 'esriRegistry', function($q, appConfig, esriLoader, esriRegistry) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -26,7 +24,6 @@
 				// 1-way string binding
 				rendererActive: '@',
 				// 2-way object binding
-				mapLoaded: '=',
 				basemapActive: '=',
 				clusterTolerance: '=',
 				heatmapRendererParams: '='
@@ -54,18 +51,18 @@
 					$scope.$on('$destroy', deregister);
 				}
 
-				require([
-					'dojo/dom-class',
-
-					'esri/layers/FeatureLayer',
+				esriLoader.require([
 					'esri/map',
+					'esri/layers/FeatureLayer',
 					'esri/renderers/HeatmapRenderer',
 
-					'lib/dojo/clusterfeaturelayer'
+					'lib/dojo/clusterfeaturelayer',
+
+					'dojo/dom-class'
 				], function(
-					domClass,
-					FeatureLayer, Map, HeatmapRenderer,
-					ClusterFeatureLayer
+					Map, FeatureLayer, HeatmapRenderer,
+					ClusterFeatureLayer,
+					domClass
 				) {
 					// map-related functions and business logic
 					var createMapLayers = function() {
@@ -152,10 +149,6 @@
 					});
 
 					mapDeferred.promise.then(function(esriApp) {
-						$scope.$watch('mapLoaded', function(newValue) {
-							console.log('mapLoaded: ', newValue);
-						});
-
 						$scope.$watch('basemapActive', function(newValue) {
 							changeBasemap(newValue);
 						});
@@ -177,9 +170,6 @@
 						$scope.$watch('clusterTolerance', function(newValue) {
 							changeClusterTolerance(newValue);
 						});
-
-						// loaded should be true by now
-						$scope.mapLoaded = esriApp.map.loaded;
 
 						// manually add material design whiteframe class to map zoom buttons
 						domClass.add('map_zoom_slider', 'md-whiteframe-z2');

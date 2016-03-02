@@ -27,7 +27,7 @@
 		// });
 	}]);
 
-	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$timeout', '$window', function($q, $timeout, $window) {
+	angular.module('AngularEsriPlaygroundApp').directive('esriSimpleMap', ['$q', '$timeout', '$window', 'esriLoader', function($q, $timeout, $window, esriLoader) {
 		return {
 			// element only directive
 			restict: 'E',
@@ -55,7 +55,7 @@
 				var mapDeferred = $q.defer();
 				// var esriApp = {};
 
-				require([
+				esriLoader.require([
 					'esri/map'
 				], function(
 					Map

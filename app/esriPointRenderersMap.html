@@ -1,4 +1,11 @@
-<esri-point-renderers-map id="map" register-as="registeredPointRenderersMapDirective" basemap-active="basemapActive" map-loaded="mapLoaded" heatmap-renderer-params="heatmapRendererParams" cluster-tolerance="clusterTolerance" renderer-active="{{rendererActive}}"></esri-point-renderers-map>
+<esri-point-renderers-map 
+	id="map"
+	register-as="registeredPointRenderersMapDirective"
+	basemap-active="basemapActive"
+	heatmap-renderer-params="heatmapRendererParams"
+	cluster-tolerance="clusterTolerance"
+	renderer-active="{{rendererActive}}">
+</esri-point-renderers-map>
 
 <div class="map-search-control" ng-controller="EsriGeocodeMdAutocompleteController">
 	<md-autocomplete
