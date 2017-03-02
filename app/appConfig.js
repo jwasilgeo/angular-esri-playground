@@ -25,7 +25,7 @@
 			},
 			layer: {
 				// url: 'http://services.arcgis.com/BG6nSlhZSAWtExvp/arcgis/rest/services/World_Volcanoes/FeatureServer/0',
-				url: 'http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/0',
+				url: '//services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/World_Cities/FeatureServer/0',
 				objectIdField: 'FID'
 			},
 			heatmapRendererParams: {
